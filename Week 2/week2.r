@@ -1,10 +1,10 @@
 #Creating a numeric vector with c (combine) function
 
-value.num <- c(10, 20, 30, 40, 50)
+value.num <- c(10, 20, 30, 40, 50) # nolint: object_name_linter.
 print(value.num)
 
 # Creating a character vector
-value.char <- c("nigger", "banana", "spick", "faggot", "chink")
+value.char <- c("nigger", "banana", "spick", "faggot", "chink") # nolint
 print(value.char)
 
 # Creating a logical vector 
@@ -94,4 +94,3 @@ print(ex1.3.1)
 # Yields same results as above - uses comma separator instead of CSV
 ex1.3c <- read.table("Week 2/ex1.3comma.txt", header = F, sep=",")
 print(ex1.3c)
-
