@@ -58,8 +58,8 @@ print(M)
 rowA <- c(1, 2, 3)
 rowB <- c(4, 5, 6)
 rowC <- c(7, 8, 9)
-M1 <- rbind(rowA, rowB, rowC)
-M2 <- cbind(rowA, rowB, rowC)
+M1 <- rbind(rowA, rowB, rowC) # Combines rows
+M2 <- cbind(rowA, rowB, rowC) # Combines columns
 print(M1)
 print(M2)
 
@@ -85,12 +85,32 @@ row.names(df1) <- c("Row1","Row2") # Change row names
 print(df1)
 
 # Read functions
-ex1.3 <- read.table("Week 2/ex1.3.txt", header = F)
+ex1.3 <- read.table("Week 2/Tutorials/ex1.3.txt", header = F)
 print(ex1.3)
 
-ex1.3.1 <- read.csv("Week 2/ex1.3comma.txt", header = F) # csv: when there are commas instead of spaces to demarcate different entries
+ex1.3.1 <- read.csv("Week 2/Tutorials/ex1.3comma.txt", header = F) # csv: when there are commas instead of spaces to demarcate different entries
 print(ex1.3.1)
 
 # Yields same results as above - uses comma separator instead of CSV
-ex1.3c <- read.table("Week 2/ex1.3comma.txt", header = F, sep=",")
+ex1.3c <- read.table("Week 2/Tutorials/ex1.3comma.txt", header = F, sep=",")
 print(ex1.3c)
+
+# Read.fwf
+ex1.3fixed <- read.fwf("Week 2/Tutorials/ex1.3fixed.txt", width=c(2, 1, 3, 3, 1))
+print(ex1.3fixed)
+
+# Scanning numbers and text
+v<-scan("Week 2/Tutorials/nums.txt", what=numeric())
+print(v)
+w <- scan("Week 2/Tutorials/text.txt", what=character()) # Separation by space by default
+print(w)
+y <- scan("Week 2/Tutorials/text.txt", what=character(), sep="\n") # Separation by new line
+print(y)
+z <- scan("Week 2/Tutorials/numscomma.txt", what=numeric(), sep=",") # Separation by comma
+print(z)
+
+# Dataframes
+ex1.3 <-read.table("Week 2/Tutorials/ex1.3.txt", header=FALSE,
+col.names=varnames)
+attach(ex1.3)
+names(ex1.3)
