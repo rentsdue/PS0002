@@ -110,7 +110,7 @@ z <- scan("Week 2/Tutorials/numscomma.txt", what=numeric(), sep=",") # Separatio
 print(z)
 
 # Dataframes
-ex1.3 <-read.table("Week 2/Tutorials/ex1.3.txt", header=FALSE,
+varnames <- c("Column 1", "Column 2", "Column 3", "Column 4", "Column 5")
+ex1.3 <-read.table("Week 2/Tutorials/ex1.3.txt", header=TRUE,
 col.names=varnames)
-attach(ex1.3)
-names(ex1.3)
+print(ex1.3)
