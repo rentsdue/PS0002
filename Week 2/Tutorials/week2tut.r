@@ -114,3 +114,5 @@ ex1.3 <-read.table("Week 2/Tutorials/ex1.3.txt", header=FALSE,
 col.names=varnames)
 attach(ex1.3)
 names(ex1.3)
+
+# 
