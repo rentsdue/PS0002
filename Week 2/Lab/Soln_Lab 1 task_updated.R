@@ -1,9 +1,9 @@
-##Lab tasks 
+##Lab Parts 
 getwd()
 ##set your own working directory
 setwd("C:/Users/lmxiang/Documents/Teaching/Analytics2011&DataScienceAI_PS0002/PS0002-Intro Data Science/Lab1")
 ################################################
-##Task 1. 
+##Part 1. 
 ################################################
 ##First, download "lab1test.txt","lab1fixed.txt" to the working directory
 ##a: Read data from an external file with fixed format
@@ -42,7 +42,7 @@ lab1sort[2,c(3,4,6)]
 #       73    174     64   57
 
 ################################################
-##Task 2
+##Part 2
 ################################################
 x<-c(rep(1,4), seq(1,7,2))
 y<-c(4,6,13,20)
@@ -51,7 +51,7 @@ hatb<-solve(t(X)%*%X)%*%t(X)%*%y
 hatb
 
 ################################################
-##Task 3: Function for computing 2 moments
+##Part 3: Function for computing 2 moments
 ################################################
 first2mom<-function(x) 
 { m<-numeric(2)
@@ -64,7 +64,7 @@ first2mom(lab1$height)
 #answer:  165.86667    75.98222   
 
 ################################################
-##Task 4: Bisection method to solve an equation
+##Part 4: Bisection method to solve an equation
 ################################################
 f1<-function(x) {(-2)*x^2-5*x+7}
 xmin<- -4;xmax<-0
