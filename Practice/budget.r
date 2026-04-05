@@ -4,7 +4,7 @@ library(lubridate)
 library(ggplot2)
 
 # Read CSV
-budget <- read_csv("Practice/budget_spreadsheet.csv", col_names = FALSE)
+budget <- read_csv("Practice/budget_spreadsheet.csv", col_names = TRUE)
 
 # Name columns
 colnames(budget)[1:3] <- c("date", "description", "amount")
@@ -16,9 +16,7 @@ budget <- budget %>% mutate(date = dmy(date))
 spend <- budget %>% filter(amount < 0)
 
 # Daily spend totals
-daily_spend <- spend %>%
-  group_by(date) %>%
-  summarise(total_spent = sum(amount), .groups = "drop")
+daily_spend <- spend %>% group_by(date) %>% summarise(total_spent = -sum(amount), .groups = "drop")
 
 # Bar chart: spending per day
 daily_spend_plot <- ggplot(daily_spend, aes(x = date, y = total_spent)) +
@@ -43,3 +41,4 @@ weekday_avg_plot <- ggplot(weekday_avg, aes(x = weekday, y = avg_spent)) +
   labs(title = "Average Spending by Weekday", x = "Weekday", y = "Average Spent")
 
 weekday_avg_plot
+
