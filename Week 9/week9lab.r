@@ -86,3 +86,17 @@ for (i in 1:30) {
 
 # Plot accuracy vs k (choose the best k)
 plot(acc, type = "b", xlab = "K", ylab = "Accuracy")
+
+# Best k value
+# Start with a chosen k (simple version)
+set.seed(109)
+knn_pred <- knn(
+  train = train.data[, c("gre", "gpa", "rank")],
+  test  = test.data[, c("gre", "gpa", "rank")],
+  cl    = train.data$admit,
+  k     = 4
+)
+
+table(Predicted = knn_pred, Actual = test.data$admit)
+mean(knn_pred == test.data$admit)
+
