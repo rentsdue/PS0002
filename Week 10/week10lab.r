@@ -14,10 +14,12 @@ summary(rotterdam)
 rot_alive <- rotterdam %>%
   filter(death == 0)
 
-# EXAM STEP 4: Convert outcome to factor
+# EXAM STEP 4: Convert stuff
 rot_alive$recur <- factor(rot_alive$recur)
+rot_alive$size <- as.numeric(rot_alive$size)
 
 # EXAM STEP 5: Select relevant predictors + outcome
+
 rot_df <- rot_alive %>%
   select(recur, age, size, grade, nodes, pgr, er)
 
@@ -44,25 +46,37 @@ lr_cm <- table(Predicted = lr_pred, Actual = test.data$recur)
 lr_acc <- mean(lr_pred == test.data$recur)
 
 lr_cm
-lr_acc
+
+coef(lr_model)
 
 # ---------------------------
 # EXAM STEP 8: kNN (requires normalization)
 # ---------------------------
 nor <- function(x) {
-  (x - min(x)) / (max(x) - min(x))
+  x <- as.numeric(x)
+  rng <- max(x, na.rm = TRUE) - min(x, na.rm = TRUE)
+  if (!is.finite(rng) || rng == 0) return(rep(0, length(x)))
+  (x - min(x, na.rm = TRUE)) / rng
 }
 
 rot_knn <- rot_df
-rot_knn[, c("age", "grade", "nodes", "pgr", "er")] <-
-  lapply(rot_knn[, c("age", "grade", "nodes", "pgr", "er")], nor)
 
-# size is a factor (<=20, 20-50, >50). Convert to numeric rank for kNN.
-rot_knn$size <- as.numeric(factor(rot_knn$size, levels = c("<=20", "20-50", ">50")))
+# # size is an ordered category in this dataset. Convert it to numeric rank for kNN.
+# rot_knn$size <- as.numeric(factor(rot_knn$size, levels = c("<=20", "20-50", ">50")))
+
+rot_knn[, c("age", "size", "grade", "nodes", "pgr", "er")] <-
+  lapply(rot_knn[, c("age", "size", "grade", "nodes", "pgr", "er")], nor)
+
+# kNN cannot handle missing values.
+rot_knn <- rot_knn[complete.cases(rot_knn), ]
 
 set.seed(100)
-train_knn <- rot_knn[train_idx, ]
-test_knn <- rot_knn[-train_idx, ]
+train_idx_knn <- sample(1:nrow(rot_knn), size = 0.8 * nrow(rot_knn))
+train_knn <- rot_knn[train_idx_knn, ]
+test_knn <- rot_knn[-train_idx_knn, ]
+
+sum(is.na(train_knn))
+sum(is.na(test_knn))
 
 # EXAM STEP 9: Choose best k (loop over k and pick max accuracy)
 acc_k <- numeric(30)
@@ -82,7 +96,7 @@ plot(acc_k, type = "b", xlab = "k", ylab = "Accuracy")
 best_k <- which.max(acc_k)
 best_k
 
-set.seed(101)
+set.seed(100)
 knn_best <- knn(
   train = train_knn[, -1],
   test = test_knn[, -1],
@@ -107,7 +121,7 @@ svm_linear <- svm(recur ~ ., data = train_knn, kernel = "linear")
 svm_pred_lin <- predict(svm_linear, newdata = test_knn)
 
 svm_lin_cm <- table(Predicted = svm_pred_lin, Actual = test_knn$recur)
-svm_lin_acc <- mean(svm_pred_lin == test_knn$recur)
+svm_lin_acc <- mean(svm_pred_lin == test_knn$recur) 
 
 svm_lin_cm
 svm_lin_acc
@@ -151,3 +165,41 @@ results <- rbind(
 )
 
 results
+
+# Explicit false positive / false negative rates (in %)
+rate_table <- results %>%
+  mutate(
+    Accuracy = round(Accuracy * 100, 2),
+    FPR = round(FPR * 100, 2),
+    FNR = round(FNR * 100, 2)
+  )
+
+rate_table
+
+# ---------------------------
+# EXAM STEP 12: Elbow method (WCSS) + 2nd WCSS difference
+# ---------------------------
+set.seed(200)
+k_max <- 10
+wcss <- numeric(k_max)
+
+for (k in 1:k_max) {
+  km <- kmeans(rot_knn[, -1], centers = k, nstart = 20)
+  wcss[k] <- km$tot.withinss
+}
+
+# Standard elbow curve
+plot(1:k_max, wcss, type = "b", pch = 19,
+     xlab = "Number of clusters (k)", ylab = "WCSS",
+     main = "Elbow Method (WCSS)")
+
+# 2nd difference of WCSS (discrete second derivative)
+wcss_diff2 <- diff(wcss, differences = 2)
+plot(3:k_max, wcss_diff2, type = "b", pch = 19, col = "blue",
+     xlab = "k", ylab = "2nd difference of WCSS",
+     main = "Elbow Method: 2nd WCSS Difference")
+
+# Suggested elbow from largest curvature magnitude
+elbow_k <- which.max(abs(wcss_diff2)) + 2
+elbow_k
+
