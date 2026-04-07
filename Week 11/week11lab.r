@@ -24,23 +24,29 @@ k_initial <- kmeans(pc_scaled, centers = 3, nstart = 25)
 k_initial
 
 # EXAM STEP 7: Elbow method to find optimal K
-wcss <- function(k) {
-  kmeans(pc_scaled, centers = k, nstart = 25)$tot.withinss
+set.seed(200)
+k_max <- 10
+wcss <- numeric(k_max)
+
+for (k in 1:k_max) {
+  km <- kmeans(pc_scaled, centers = k, nstart = 25)
+  wcss[k] <- km$tot.withinss
 }
 
-k_values <- 1:10
-set.seed(100)
-wcss_k <- sapply(k_values, wcss)
+# Standard elbow curve
+plot(1:k_max, wcss, type = "b", pch = 19,
+     xlab = "Number of clusters (k)", ylab = "WCSS",
+     main = "Elbow Method (WCSS)")
 
-plot(
-  k_values,
-  wcss_k,
-  type = "b",
-  pch = 19,
-  frame = FALSE,
-  xlab = "Number of clusters K",
-  ylab = "Total within-cluster sum of squares"
-)
+# 2nd difference of WCSS (discrete second derivative)
+wcss_diff2 <- diff(wcss, differences = 2)
+plot(3:k_max, wcss_diff2, type = "b", pch = 19, col = "blue",
+     xlab = "k", ylab = "2nd difference of WCSS",
+     main = "Elbow Method: 2nd WCSS Difference")
+
+# Suggested elbow from largest curvature magnitude
+elbow_k <- which.max(abs(wcss_diff2)) + 2
+elbow_k
 
 # EXAM STEP 8: K-means with optimal K (set after inspecting the elbow plot)
 optimal_k <- 4
@@ -59,3 +65,4 @@ dist_matrix <- dist(pc_scaled, method = "euclidean")
 hc <- hclust(dist_matrix, method = "complete")
 plot(hc, cex = 0.6, hang = -1)
 rect.hclust(hc, k = optimal_k, border = 2:(optimal_k + 1))
+

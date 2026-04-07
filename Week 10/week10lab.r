@@ -176,30 +176,5 @@ rate_table <- results %>%
 
 rate_table
 
-# ---------------------------
-# EXAM STEP 12: Elbow method (WCSS) + 2nd WCSS difference
-# ---------------------------
-set.seed(200)
-k_max <- 10
-wcss <- numeric(k_max)
 
-for (k in 1:k_max) {
-  km <- kmeans(rot_knn[, -1], centers = k, nstart = 20)
-  wcss[k] <- km$tot.withinss
-}
-
-# Standard elbow curve
-plot(1:k_max, wcss, type = "b", pch = 19,
-     xlab = "Number of clusters (k)", ylab = "WCSS",
-     main = "Elbow Method (WCSS)")
-
-# 2nd difference of WCSS (discrete second derivative)
-wcss_diff2 <- diff(wcss, differences = 2)
-plot(3:k_max, wcss_diff2, type = "b", pch = 19, col = "blue",
-     xlab = "k", ylab = "2nd difference of WCSS",
-     main = "Elbow Method: 2nd WCSS Difference")
-
-# Suggested elbow from largest curvature magnitude
-elbow_k <- which.max(abs(wcss_diff2)) + 2
-elbow_k
 
